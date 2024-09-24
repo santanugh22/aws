@@ -27,6 +27,6 @@ jobs:
               sudo git pull origin main &&
               sudo npm i &&
               
-              sudo pm2 restart app.js &&
+              pm2 restart app.js &&
               sudo nginx -s reload
               '
