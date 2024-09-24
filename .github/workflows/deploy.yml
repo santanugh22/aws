@@ -14,4 +14,4 @@ jobs:
       - name: Console log
         env: 
           SECRET: ${{ secrets.SECRET }}
-        run: echo $SECRET
+        run: echo "$SECRET This is the secret"
