@@ -2,16 +2,32 @@ name: Deploy
 
 on:
   push:
-    branches:
-      - main
-jobs:
-  build:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+    branches: [ dev ]
 
-      - name: Console log
-        env: 
-          SECRET: ${{ secrets.SECRET }}
-        run: echo "$SECRET This is the secret"
+jobs:
+  Deploy:
+    name: Deploy to EC2
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v2 
+      - name: Build & Deploy
+        env:
+            PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+            HOSTNAME: ${{secrets.SSH_HOST}}
+            USER_NAME: ${{secrets.USER_NAME}}
+      
+        run: |
+          echo "$PRIVATE_KEY" > private_key && chmod 600 private_key
+          ssh -o StrictHostKeyChecking=no -i private_key ${USER_NAME}@${HOSTNAME} '
+
+              # Now we have got the access of EC2 and we will start the deploy .
+              cd /var/www &&
+             
+              sudo git pull origin main &&
+              sudo npm i &&
+              
+              sudo pm2 stop app.js &&
+              sudo pm2 start app.js
+              sudo nginx -s reload
+              '
